@@ -8,7 +8,13 @@ jobs:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: ls
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd my-unsplash 
+            git pull 
+            sudo docker stop my-unsplash || true && sudo docker rm my-unsplash || true
+            sudo docker image build -t my-unsplash .
+            sudo docker container run --name my-unsplash -d -p 3000:${{ secrets.PORT }} -v ./db.json:./app/server/db.json ${{ secrets.PASSWORD }} my-unsplash
+            echo "done"
