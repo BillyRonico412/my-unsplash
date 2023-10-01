@@ -16,7 +16,7 @@ const App = () => {
 			trpc.createClient({
 				links: [
 					httpBatchLink({
-						url: "http://localhost:3000",
+						url: import.meta.env.VITE_TRPC_URL,
 						headers: () => {
 							return {
 								Authorization: `Bearer ${password}`,
