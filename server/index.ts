@@ -19,7 +19,10 @@ const zodPhoto = z.object({
 const db = new JsonDB(new Config("db", true, true, "/"))
 
 const appRouter = router({
-	addPhoto: publicProcedure.input(zodPhoto).mutation(async ({ input }) => {
+	addPhoto: publicProcedure.input(zodPhoto).mutation(async ({ input, ctx }) => {
+		if (!ctx.authenticated) {
+			throw new Error("Unauthorized")
+		}
 		const [errAddPhoto] = await to(db.push(`/photos/${input.id}`, input, true))
 		if (errAddPhoto) {
 			throw errAddPhoto

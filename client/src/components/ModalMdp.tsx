@@ -1,42 +1,44 @@
 import { useAtom } from "jotai"
-import { ModalShowedType, modalShowedAtom, notyf } from "../utils"
+import { useEffect } from "react"
+import { modalInfoAtom, notyf, passwordAtom } from "../utils"
 import Modal from "./Modal"
-import { useEffect, useState } from "react"
+import { nanoid } from "nanoid"
 
-interface Props {
-	callBack: () => void
-	isLoading: boolean
-	isSuccess: boolean
-	modalShowedValue: ModalShowedType
-}
-
-const ModalMdp = (props: Props) => {
-	const [modalShowed, setModalShowed] = useAtom(modalShowedAtom)
-	const [password, setPassword] = useState("")
+const ModalMdp = () => {
+	const [modalInfo, setModalInfo] = useAtom(modalInfoAtom)
+	const [password, setPassword] = useAtom(passwordAtom)
 
 	useEffect(() => {
-		if (props.isSuccess) {
-			setModalShowed(null)
+		if (
+			modalInfo &&
+			(modalInfo.type === "password-add" ||
+				modalInfo.type === "password-delete") &&
+			modalInfo.mutation.isSuccess
+		) {
 			setPassword("")
+			setModalInfo(null)
 		}
-	}, [props.isSuccess, setModalShowed])
+	}, [modalInfo, setModalInfo, setPassword])
+
+	if (
+		!modalInfo ||
+		(modalInfo.type !== "password-add" && modalInfo.type !== "password-delete")
+	) {
+		return <></>
+	}
 
 	return (
-		<Modal showModal={modalShowed === props.modalShowedValue}>
+		<Modal>
 			<div className="flex flex-col gap-y-6">
 				<p className="font-medium text-xl">Are you sure?</p>
 				<div className="flex flex-col gap-y-2">
 					<p className="text-sm font-medium">Password</p>
 					<input
-						type="text"
+						type="password"
 						className="outline-none border rounded-lg border-gray-400 px-4 py-2 text-sm"
-						placeholder="E.g. Beautiful Landscape in Bali"
+						placeholder="********"
 						value={password}
 						onInput={(e) => {
-							if (e.currentTarget.value.length > 100) {
-								notyf.error("Label must be less than 50 characters")
-								return
-							}
 							setPassword(e.currentTarget.value)
 						}}
 					/>
@@ -44,21 +46,32 @@ const ModalMdp = (props: Props) => {
 				<div className="ml-auto flex gap-x-4">
 					<button
 						className="rounded-lg shadow  text-gray-400 ml-auto px-4 py-3"
-						disabled={props.isLoading}
+						disabled={modalInfo.mutation.isLoading}
 						onClick={() => {
-							setModalShowed(null)
+							setModalInfo(null)
+							setPassword("")
 						}}
 					>
 						Cancel
 					</button>
 					<button
-						className="rounded-lg shadow bg-green-600 text-white ml-auto px-4 py-3"
+						className="rounded-lg shadow bg-red-600 text-white ml-auto px-4 py-3"
 						onClick={() => {
 							if (password === "") {
 								notyf.error("Please fill all fields")
 								return
 							}
-							props.callBack()
+							if (modalInfo.type === "password-delete") {
+								modalInfo.mutation.mutate(modalInfo.id)
+							}
+							if (modalInfo.type === "password-add") {
+								modalInfo.mutation.mutate({
+									id: nanoid(),
+									label: modalInfo.label,
+									url: modalInfo.url,
+									date: Date.now(),
+								})
+							}
 						}}
 					>
 						Submit

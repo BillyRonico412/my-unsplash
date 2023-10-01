@@ -1,27 +1,31 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { httpBatchLink } from "@trpc/client"
 import { useAtom } from "jotai"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import Header from "./components/Header"
 import MansoryPhotos from "./components/MansoryPhotos"
 import ModalAdd from "./components/ModalAdd"
-import { modalShowedAtom, passwordAtom, trpc } from "./utils"
+import ModalMdp from "./components/ModalMdp"
+import { passwordAtom, trpc } from "./utils"
 
 const App = () => {
-	const [, setModalShowed] = useAtom(modalShowedAtom)
 	const [password] = useAtom(passwordAtom)
-	const [queryClient] = useState(() => new QueryClient())
-	const [trpcClient] = useState(() =>
-		trpc.createClient({
-			links: [
-				httpBatchLink({
-					url: "http://localhost:3000",
-					headers: () => ({
-						Authorization: `Bearer ${password}`,
+	const queryClient = useMemo(() => new QueryClient(), [])
+	const trpcClient = useMemo(
+		() =>
+			trpc.createClient({
+				links: [
+					httpBatchLink({
+						url: "http://localhost:3000",
+						headers: () => {
+							return {
+								Authorization: `Bearer ${password}`,
+							}
+						},
 					}),
-				}),
-			],
-		}),
+				],
+			}),
+		[password],
 	)
 
 	return (
@@ -32,6 +36,7 @@ const App = () => {
 					<MansoryPhotos />
 				</div>
 				<ModalAdd />
+				<ModalMdp />
 			</QueryClientProvider>
 		</trpc.Provider>
 	)

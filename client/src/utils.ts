@@ -8,12 +8,25 @@ export const trpc = createTRPCReact<AppRouter>()
 
 export const notyf = new Notyf()
 
-export type ModalShowedType = null | "add" | "password-delete" | "password-add"
+type ModalInfoType =
+	| null
+	| {
+			type: "add" | "edit"
+	  }
+	| {
+			type: "password-delete"
+			id: string
+			mutation: ReturnType<typeof trpc.deletePhoto.useMutation>
+	  }
+	| {
+			type: "password-add"
+			label: string
+			url: string
+			mutation: ReturnType<typeof trpc.addPhoto.useMutation>
+	  }
 
-export const modalShowedAtom = atom<ModalShowedType>(null)
+export const modalInfoAtom = atom<ModalInfoType>(null)
 
 export const passwordAtom = atom("")
 
-export const callbackWhenAuthAtom = atom<{
-	callback: () => void
-} | null>(null)
+export const searchAtom = atom("")

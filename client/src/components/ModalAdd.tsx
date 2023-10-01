@@ -1,13 +1,12 @@
 import { useAtom } from "jotai"
-import { modalShowedAtom, notyf, trpc } from "../utils"
-import Modal from "./Modal"
-import { nanoid } from "nanoid"
 import { useState } from "react"
+import { modalInfoAtom, notyf, trpc } from "../utils"
+import Modal from "./Modal"
 
 const ModalAdd = () => {
 	const [label, setLabel] = useState("")
 	const [url, setUrl] = useState("")
-	const [modalShowed, setModalShowed] = useAtom(modalShowedAtom)
+	const [modalInfo, setModalInfo] = useAtom(modalInfoAtom)
 	const getPhotosQuery = trpc.getPhotos.useQuery()
 	const addPhotoMutation = trpc.addPhoto.useMutation({
 		onError(error) {
@@ -18,18 +17,16 @@ const ModalAdd = () => {
 			getPhotosQuery.refetch()
 			setLabel("")
 			setUrl("")
-			setModalShowed(null)
+			setModalInfo(null)
 		},
 	})
 
-	if (addPhotoMutation.error) {
-	}
-
-	if (addPhotoMutation.isSuccess) {
+	if (!modalInfo || modalInfo.type !== "add") {
+		return <></>
 	}
 
 	return (
-		<Modal showModal={modalShowed === "add"}>
+		<Modal>
 			<div className="flex flex-col gap-y-6">
 				<p className="font-medium text-xl">Add a new photo</p>
 				<div className="flex flex-col gap-y-2">
@@ -41,7 +38,7 @@ const ModalAdd = () => {
 						value={label}
 						onInput={(e) => {
 							if (e.currentTarget.value.length > 100) {
-								notyf.error("Label must be less than 50 characters")
+								notyf.error("Label must be less than 100 characters")
 								return
 							}
 							setLabel(e.currentTarget.value)
@@ -58,7 +55,7 @@ const ModalAdd = () => {
 						value={url}
 						onInput={(e) => {
 							if (e.currentTarget.value.length > 500) {
-								notyf.error("URL must be less than 200 characters")
+								notyf.error("URL must be less than 500 characters")
 								return
 							}
 							setUrl(e.currentTarget.value)
@@ -72,7 +69,7 @@ const ModalAdd = () => {
 						onClick={() => {
 							setLabel("")
 							setUrl("")
-							setModalShowed(null)
+							setModalInfo(null)
 						}}
 					>
 						Cancel
@@ -85,11 +82,11 @@ const ModalAdd = () => {
 								notyf.error("Please fill all fields")
 								return
 							}
-							addPhotoMutation.mutate({
-								id: nanoid(),
+							setModalInfo({
+								type: "password-add",
+								mutation: addPhotoMutation,
 								label,
 								url,
-								date: Date.now(),
 							})
 						}}
 					>
