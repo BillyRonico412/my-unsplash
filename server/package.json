@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "nodemon index.ts"
+    "dev": "nodemon index.ts",
+    "prod": "ts-node index.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.14",
