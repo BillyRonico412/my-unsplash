@@ -14,6 +14,7 @@ jobs:
           script: |
             cd my-unsplash 
             git pull 
+            docker ps -q --filter "name=my-unsplash" | grep -q . && docker stop my-unsplash && docker rm -fv my-unsplash
             sudo docker stop my-unsplash || true && sudo docker rm my-unsplash || true
             sudo docker image build -t my-unsplash .
             sudo docker container run --name my-unsplash -d -p 3000:${{ secrets.PORT }} -v ./db.json:./app/server/db.json ${{ secrets.PASSWORD }} my-unsplash
