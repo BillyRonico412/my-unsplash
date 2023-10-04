@@ -1,6 +1,6 @@
 <!-- Please update value in the {}  -->
 
-<h1 align="center">{Your project name}</h1>
+<h1 align="center">My unspla</h1>
 
 <div align="center">
    Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
@@ -8,11 +8,11 @@
 
 <div align="center">
   <h3>
-    <a href="https://{your-demo-link.your-domain}">
+    <a href="https://my-unsplash-indol.vercel.app/">
       Demo
     </a>
     <span> | </span>
-    <a href="https://{your-url-to-the-solution}">
+    <a href="https://github.com/BillyRonico412/my-unsplash">
       Solution
     </a>
     <span> | </span>
@@ -37,22 +37,29 @@
 
 ## Overview
 
-![screenshot](https://user-images.githubusercontent.com/16707738/92399059-5716eb00-f132-11ea-8b14-bcacdc8ec97b.png)
+![Screenshot](https://github.com/BillyRonico412/my-unsplash/assets/65350513/ae18d7a9-cf96-41cf-aecb-4124298b12d4)
 
-Introduce your projects by taking a screenshot or a gif. Try to tell visitors a story about your project by answering:
+My unsplash is a clone of unsplash with its famous Mansory layout. 
+This is a Typescript full stack project built with React (with Tailwind) and tRPC (with node-json-db like database). 
+I also used XState to manage app state, and appended Continuous Deploiement with Github Action.
 
-- Where can I see your demo?
-- What was your experience?
-- What have you learned/improved?
-- Your wisdom? :)
+- User story: I can see a list of photos in the masonry layout that I have added
+- User story: I can add a new photo to the list - the new photo should be on top of the list
+- User story: I can search for photos by label
+- User story: When I hover a photo, I can see a label and a delete button
+- User story: I can delete images
+- User story (optional): When I delete an image, I can enter my password
 
 ### Built With
 
 <!-- This section should list any major frameworks that you built your project using. Here are a few examples.-->
 
 - [React](https://reactjs.org/)
-- [Vue.js](https://vuejs.org/)
 - [Tailwind](https://tailwindcss.com/)
+- [XState](https://xstate.js.org/docs/)
+- [tRPC](https://trpc.io/)
+- [Jotai](https://jotai.org/)
+- [NodeJsonDb](https://www.npmjs.com/package/node-json-db)
 
 ## Features
 
@@ -68,25 +75,32 @@ To clone and run this application, you'll need [Git](https://git-scm.com) and [N
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/your-user-name/your-project-name
+$ git clone https://github.com/BillyRonico412/my-unsplash
 
-# Install dependencies
-$ npm install
+# Server config
+$ cd ./server
+$ echo "PASSWORD=xxxxxxxxxx" > .env
+$ npm i
+$ npm run dev
 
-# Run the app
-$ npm start
+# Client config
+$ cd ../client
+$ echo VITE_TRPC_URL="http://localhost:3000" > .env.local
+$ npm i
+$ npm run dev
 ```
 
 ## Acknowledgements
 
 <!-- This section should list any articles or add-ons/plugins that helps you to complete the project. This is optional but it will help you in the future. For example: -->
 
-- [Steps to replicate a design with only HTML and CSS](https://devchallenges-blogs.web.app/how-to-replicate-design/)
-- [Node.js](https://nodejs.org/)
-- [Marked - a markdown parser](https://github.com/chjj/marked)
+- [Zod](https://devchallenges-blogs.web.app/how-to-replicate-design/)
+- [tRPC](https://trpc.io/)
+- [Github Actions SSH](https://github.com/appleboy/ssh-action)
+- [Jotai](https://jotai.org/)
+- [XState](https://xstate.js.org/docs/)
 
 ## Contact
 
-- Website [your-website.com](https://{your-web-site-link})
-- GitHub [@your-username](https://{github.com/your-usermame})
-- Twitter [@your-twitter](https://{twitter.com/your-username})
+- Website [ronico-billy.fr](https://ronico-billy.fr)
+- GitHub [@BillyRonico412](https://github.com/BillyRonico412)
