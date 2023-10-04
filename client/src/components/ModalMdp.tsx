@@ -1,29 +1,25 @@
 import { useAtom } from "jotai"
-import { useEffect } from "react"
-import { modalInfoAtom, notyf, passwordAtom } from "../utils"
+import { machineAtom, notyf } from "../utils"
 import Modal from "./Modal"
-import { nanoid } from "nanoid"
+import { useEffect, useRef } from "react"
 
 const ModalMdp = () => {
-	const [modalInfo, setModalInfo] = useAtom(modalInfoAtom)
-	const [password, setPassword] = useAtom(passwordAtom)
+	const [state, send] = useAtom(machineAtom)
+	const refInputMdp = useRef<HTMLInputElement>(null)
+	const refOnce = useRef(false)
 
 	useEffect(() => {
 		if (
-			modalInfo &&
-			(modalInfo.type === "password-add" ||
-				modalInfo.type === "password-delete") &&
-			modalInfo.mutation.isSuccess
+			(state.matches("add-password") || state.matches("delete-password")) &&
+			!refOnce.current
 		) {
-			setPassword("")
-			setModalInfo(null)
+			refInputMdp.current?.focus()
+			refOnce.current = true
 		}
-	}, [modalInfo, setModalInfo, setPassword])
+	}, [state])
 
-	if (
-		!modalInfo ||
-		(modalInfo.type !== "password-add" && modalInfo.type !== "password-delete")
-	) {
+	if (!state.matches("add-password") && !state.matches("delete-password")) {
+		refOnce.current = false
 		return <></>
 	}
 
@@ -34,22 +30,30 @@ const ModalMdp = () => {
 				<div className="flex flex-col gap-y-2">
 					<p className="text-sm font-medium">Password</p>
 					<input
+						ref={refInputMdp}
 						type="password"
 						className="outline-none border rounded-lg border-gray-400 px-4 py-2 text-sm"
 						placeholder="********"
-						value={password}
+						value={state.context.password}
 						onInput={(e) => {
-							setPassword(e.currentTarget.value)
+							send({
+								type: "UPDATE_PASSWORD",
+								payload: {
+									password: e.currentTarget.value,
+								},
+							})
 						}}
 					/>
 				</div>
 				<div className="ml-auto flex gap-x-4">
 					<button
 						className="rounded-lg shadow  text-gray-400 ml-auto px-4 py-3"
-						disabled={modalInfo.mutation.isLoading}
+						disabled={
+							Boolean(state.matches("adding")) ||
+							Boolean(state.matches("deleting"))
+						}
 						onClick={() => {
-							setModalInfo(null)
-							setPassword("")
+							send("CLOSE_PASSWORD")
 						}}
 					>
 						Cancel
@@ -57,21 +61,11 @@ const ModalMdp = () => {
 					<button
 						className="rounded-lg shadow bg-red-600 text-white ml-auto px-4 py-3"
 						onClick={() => {
-							if (password === "") {
+							if (state.context.password === "") {
 								notyf.error("Please fill all fields")
 								return
 							}
-							if (modalInfo.type === "password-delete") {
-								modalInfo.mutation.mutate(modalInfo.id)
-							}
-							if (modalInfo.type === "password-add") {
-								modalInfo.mutation.mutate({
-									id: nanoid(),
-									label: modalInfo.label,
-									url: modalInfo.url,
-									date: Date.now(),
-								})
-							}
+							send("PASSWORD")
 						}}
 					>
 						Submit

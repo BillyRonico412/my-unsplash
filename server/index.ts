@@ -6,11 +6,11 @@ import { publicProcedure, router } from "./trpc"
 import cors from "cors"
 import { createContext } from "./context"
 import dotenv from "dotenv"
+import { v4 } from "uuid"
 
 dotenv.config()
 
 const zodPhoto = z.object({
-	id: z.string(),
 	label: z.string().min(1).max(100),
 	url: z.string().min(1).max(500).url(),
 	date: z.number().int(),
@@ -23,7 +23,8 @@ const appRouter = router({
 		if (!ctx.authenticated) {
 			throw new Error("Unauthorized")
 		}
-		const [errAddPhoto] = await to(db.push(`/photos/${input.id}`, input, true))
+		const id = v4()
+		const [errAddPhoto] = await to(db.push(`/photos/${id}`, input, true))
 		if (errAddPhoto) {
 			throw errAddPhoto
 		}
@@ -39,7 +40,7 @@ const appRouter = router({
 		return photos
 	}),
 	deletePhoto: publicProcedure
-		.input(zodPhoto.shape.id)
+		.input(z.string())
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.authenticated) {
 				throw new Error("Unauthorized")

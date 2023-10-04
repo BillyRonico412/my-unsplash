@@ -26,6 +26,10 @@
 			"correctness": {
 				"all": true,
 				"noUndeclaredVariables": "off"
+			},
+			"complexity": {
+				"all": true,
+				"useSimplifiedLogicExpression": "off"
 			}
 		}
 	},

@@ -1,10 +1,9 @@
 import { useAtom } from "jotai"
 import { FaPlus, FaSearch } from "react-icons/fa"
-import { modalInfoAtom, searchAtom } from "../utils"
+import { machineAtom } from "../utils"
 
 const Header = () => {
-	const [, setModalInfo] = useAtom(modalInfoAtom)
-	const [search, setSearch] = useAtom(searchAtom)
+	const [state, send] = useAtom(machineAtom)
 	return (
 		<div className="flex gap-x-4 lg:gap-x-12 container mx-auto px-4">
 			<div className="flex items-center gap-x-4">
@@ -25,19 +24,20 @@ const Header = () => {
 					type="text"
 					placeholder="Search by name"
 					className="h-full w-full lg:w-auto border-none outline-none"
-					value={search}
+					value={state.context.search}
 					onInput={(e) => {
-						setSearch(e.currentTarget.value)
+						send({
+							type: "UPDATE_SEARCH",
+							payload: {
+								search: e.currentTarget.value,
+							},
+						})
 					}}
 				/>
 			</div>
 			<button
 				className="rounded-lg shadow bg-green-600 text-white ml-auto px-4"
-				onClick={() =>
-					setModalInfo({
-						type: "add",
-					})
-				}
+				onClick={() => send("ADD_FORM")}
 			>
 				<span className="hidden lg:inline">Add a photo</span>
 				<span className="inline lg:hidden">
