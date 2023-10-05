@@ -1,6 +1,6 @@
 import { createHTTPServer } from "@trpc/server/adapters/standalone"
 import to from "await-to-js"
-import { Config, JsonDB } from "node-json-db"
+import { Config, DatabaseError, JsonDB } from "node-json-db"
 import { z } from "zod"
 import { publicProcedure, router } from "./trpc"
 import cors from "cors"
@@ -24,16 +24,19 @@ const appRouter = router({
 			throw new Error("Unauthorized")
 		}
 		const id = v4()
-		const [errAddPhoto] = await to(db.push(`/photos/${id}`, input, true))
+		const [errAddPhoto] = await to<void, DatabaseError>(
+			db.push(`/photos/${id}`, input, true),
+		)
 		if (errAddPhoto) {
-			throw errAddPhoto
+			throw errAddPhoto.inner
 		}
 		return true
 	}),
 	getPhotos: publicProcedure.query(async () => {
-		const [errGetPhotos, photos] = await to(
-			db.getObject<Record<string, z.infer<typeof zodPhoto>>>("/photos"),
-		)
+		const [errGetPhotos, photos] = await to<
+			Record<string, z.infer<typeof zodPhoto>>,
+			DatabaseError
+		>(db.getObject<Record<string, z.infer<typeof zodPhoto>>>("/photos"))
 		if (errGetPhotos) {
 			throw errGetPhotos
 		}
@@ -45,7 +48,9 @@ const appRouter = router({
 			if (!ctx.authenticated) {
 				throw new Error("Unauthorized")
 			}
-			const [errDeletePhoto] = await to(db.delete(`/photos/${input}`))
+			const [errDeletePhoto] = await to<void, DatabaseError>(
+				db.delete(`/photos/${input}`),
+			)
 			if (errDeletePhoto) {
 				throw errDeletePhoto
 			}
